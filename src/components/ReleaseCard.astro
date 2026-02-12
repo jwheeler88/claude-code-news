@@ -62,8 +62,10 @@ function renderInlineCode(text: string): string {
 
 <style>
   .release-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: rgba(20, 20, 20, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 24px;
   }
