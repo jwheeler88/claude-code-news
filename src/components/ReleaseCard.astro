@@ -40,6 +40,7 @@ function formatDate(dateStr: string): string {
   <ul class="changes">
     {release.items.map((item) => (
       <li class="change-item" data-category={item.category}>
+        <span class="item-bullet">▪</span>
         <span class="item-text">{item.text}</span>
         <button class="copy-btn" data-copy={item.text} aria-label="Copy to clipboard">
           <span class="material-symbols-sharp">content_copy</span>
@@ -128,8 +129,7 @@ function formatDate(dateStr: string): string {
   .change-item {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
+    gap: 8px;
     padding: 8px 12px;
     border-radius: 6px;
     border-left: 2px solid transparent;
@@ -141,7 +141,15 @@ function formatDate(dateStr: string): string {
     border-left-color: var(--color-accent);
   }
 
+  .item-bullet {
+    color: var(--color-accent);
+    flex-shrink: 0;
+    line-height: 1.5;
+    font-size: 14px;
+  }
+
   .item-text {
+    flex: 1;
     font-size: 14px;
     line-height: 1.5;
   }
