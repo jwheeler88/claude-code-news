@@ -42,8 +42,10 @@ const buildTimestamp = Date.now();
         <h1 class="page-title"><span class="material-symbols-sharp title-icon">radio_button_checked</span><span class="title-text">Monitor the changelog, HAL.</span><span class="crt-sweep"></span></h1>
         <div class="terminal-block">
           <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</div>
+          <div class="terminal-line terminal-spacer"></div>
           <div class="terminal-line terminal-output terminal-error">Permission denied. I'm afraid I can't do that, Dave.</div>
           <div class="terminal-line terminal-output"><span class="terminal-connector">└</span>&nbsp;<span class="tool-call">Bash</span>(<span class="tool-cmd">rm -rf claude-code/CHANGELOG</span>)</div>
+          <div class="terminal-line terminal-spacer"></div>
           <div class="terminal-line terminal-output"><span class="spinner">⠋</span> <span class="spinner-label">Hallucinating...</span></div>
         </div>
       </div>
@@ -233,6 +235,10 @@ const buildTimestamp = Date.now();
     white-space: nowrap;
   }
 
+  .terminal-spacer {
+    height: 4px;
+  }
+
   .terminal-error {
     color: var(--color-accent);
   }
@@ -243,7 +249,7 @@ const buildTimestamp = Date.now();
   }
 
   .tool-call {
-    color: #f59e0b;
+    color: #b57a08;
     font-weight: 600;
   }
 
@@ -269,7 +275,7 @@ const buildTimestamp = Date.now();
     font-size: 13px;
     color: var(--color-accent);
     text-shadow: 0 0 6px rgba(204, 0, 0, 0.3);
-    animation: spinner-glow 3s ease-in-out infinite;
+    animation: spinner-glow 2s ease-in-out infinite;
   }
 
   @keyframes spinner-glow {
