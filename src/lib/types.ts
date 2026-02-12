@@ -3,6 +3,7 @@ export type Category = "feature" | "bug-fix" | "performance" | "security" | "imp
 export interface ChangeItem {
   text: string;
   category: Category;
+  platform?: string;
 }
 
 export interface Release {

@@ -10,9 +10,26 @@ export function parseReleaseBody(body: string): ChangeItem[] {
   for (const line of lines) {
     const match = line.match(/^-\s+(.+)/);
     if (!match) continue;
-    const text = match[1].trim();
+    let text = match[1].trim();
     if (!text) continue;
-    items.push({ text, category: categorize(text) });
+
+    let platform: string | undefined;
+
+    // "VSCode: some text" → platform "VSCode"
+    const prefixMatch = text.match(/^(\w+):\s+(.+)/);
+    if (prefixMatch && ["VSCode", "IDE", "SDK"].includes(prefixMatch[1])) {
+      platform = prefixMatch[1];
+      text = prefixMatch[2];
+    }
+
+    // "[VSCode] some text" → platform "VSCode"
+    const bracketMatch = text.match(/^\[([^\]]+)\]\s+(.+)/);
+    if (!platform && bracketMatch) {
+      platform = bracketMatch[1];
+      text = bracketMatch[2];
+    }
+
+    items.push({ text, category: categorize(text), ...(platform && { platform }) });
   }
 
   return items;

@@ -45,7 +45,10 @@ function renderInlineCode(text: string): string {
     {release.items.map((item) => (
       <li class="change-item" data-category={item.category}>
         <span class="item-bullet">▪</span>
-        <span class="item-text" set:html={renderInlineCode(item.text)} />
+        <div class="item-content">
+          <span class="item-text" set:html={renderInlineCode(item.text)} />
+          {item.platform && <span class="platform-row"><span class="platform-connector">└</span><span class="platform-pill">{item.platform}</span></span>}
+        </div>
         <button class="copy-btn" data-copy={item.text} aria-label="Copy to clipboard">
           <span class="material-symbols-sharp">content_copy</span>
         </button>
@@ -152,8 +155,36 @@ function renderInlineCode(text: string): string {
     font-size: 14px;
   }
 
-  .item-text {
+  .item-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .platform-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .platform-connector {
+    color: var(--color-text-muted);
+    font-size: 13px;
+  }
+
+  .platform-pill {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(6, 182, 212, 0.15);
+    color: #06b6d4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .item-text {
     font-size: 14px;
     line-height: 1.5;
   }
