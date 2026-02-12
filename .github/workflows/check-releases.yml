@@ -1,0 +1,27 @@
+name: Check for new releases
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Every 30 minutes
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compare versions
+        run: |
+          LIVE=$(curl -sf https://claudecode.news/latest.json | jq -r '.version')
+          LATEST=$(curl -sf https://api.github.com/repos/anthropics/claude-code/releases/latest | jq -r '.tag_name')
+
+          echo "Live: $LIVE"
+          echo "Latest: $LATEST"
+
+          if [ "$LIVE" = "$LATEST" ]; then
+            echo "No new release. Skipping rebuild."
+            exit 0
+          fi
+
+          echo "New release detected! $LIVE -> $LATEST"
+          curl -sf -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+          echo "Deploy hook triggered."
