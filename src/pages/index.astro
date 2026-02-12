@@ -1,14 +1,200 @@
 ---
-// placeholder - will be replaced in Task 6
+import Layout from "../layouts/Layout.astro";
+import Sidebar from "../components/Sidebar.astro";
+import ReleaseCard from "../components/ReleaseCard.astro";
+import { fetchReleases } from "../lib/github";
+import type { Category } from "../lib/types";
+
+const releases = await fetchReleases();
+
+const categoryMeta: { label: string; value: Category }[] = [
+  { label: "Features", value: "feature" },
+  { label: "Bug Fixes", value: "bug-fix" },
+  { label: "Performance", value: "performance" },
+  { label: "Security", value: "security" },
+  { label: "Improvements", value: "improvement" },
+];
+
+const categoryCounts = categoryMeta.map((cat) => ({
+  ...cat,
+  count: releases.filter((r) => r.items.some((item) => item.category === cat.value)).length,
+}));
+
+const latestVersion = releases.length > 0 ? releases[0].version : "N/A";
+const buildTimestamp = Date.now();
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Claude Code Release Notes</title>
-  </head>
-  <body>
-    <h1>Claude Code Release Notes</h1>
-    <p>Coming soon.</p>
-  </body>
-</html>
+<Layout title="Claude Code Release Notes">
+  <Sidebar
+    categories={categoryCounts}
+    totalReleases={releases.length}
+    latestVersion={latestVersion}
+  />
+
+  <main class="content">
+    <header class="content-header">
+      <div class="header-text">
+        <h1 class="page-title">Release Notes</h1>
+        <p class="page-subtitle">Stay up to date with the latest changes to Claude Code</p>
+      </div>
+      <div class="search-wrapper">
+        <span class="material-symbols-sharp search-icon">search</span>
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Search releases..."
+          autocomplete="off"
+        />
+      </div>
+    </header>
+
+    <div id="release-list" class="release-list">
+      {releases.map((release, i) => (
+        <div class="release-wrapper" data-index={i}>
+          <ReleaseCard release={release} />
+        </div>
+      ))}
+    </div>
+
+    <div id="load-more-container" class="load-more-container">
+      <button id="load-more-btn" class="load-more-btn">Load more</button>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" hidden>
+    <span>New releases available</span>
+    <a href="/" class="toast-refresh">Refresh</a>
+    <button id="toast-dismiss" class="toast-dismiss" aria-label="Dismiss">
+      <span class="material-symbols-sharp">close</span>
+    </button>
+  </div>
+</Layout>
+
+<script is:inline define:vars={{ buildTimestamp }}>
+  window.__BUILD_TIMESTAMP__ = buildTimestamp;
+</script>
+
+<style>
+  .content {
+    margin-left: var(--sidebar-width);
+    padding: 32px 40px;
+    max-width: 960px;
+  }
+
+  .content-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .page-title {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    margin-top: 4px;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--color-text-muted);
+  }
+
+  .search-input {
+    padding: 10px 16px 10px 40px;
+    width: 260px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .search-input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .release-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .load-more-container {
+    margin-top: 24px;
+    text-align: center;
+  }
+
+  .load-more-btn {
+    padding: 12px 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .load-more-btn:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-text-muted);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+  }
+
+  .toast[hidden] {
+    display: none;
+  }
+
+  .toast-refresh {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .toast-dismiss {
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+  }
+</style>
