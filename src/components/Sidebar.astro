@@ -10,10 +10,11 @@ interface CategoryNav {
 interface Props {
   categories: CategoryNav[];
   totalReleases: number;
+  thisMonthCount: number;
   latestVersion: string;
 }
 
-const { categories, totalReleases, latestVersion } = Astro.props;
+const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props;
 ---
 <aside class="sidebar">
   <div class="logo">
@@ -42,6 +43,10 @@ const { categories, totalReleases, latestVersion } = Astro.props;
   </nav>
 
   <div class="stats-box">
+    <div class="stat">
+      <span class="stat-value stat-green">{thisMonthCount}</span>
+      <span class="stat-label">This Month</span>
+    </div>
     <div class="stat">
       <span class="stat-value">{totalReleases}</span>
       <span class="stat-label">Total Releases</span>
@@ -162,6 +167,10 @@ const { categories, totalReleases, latestVersion } = Astro.props;
     font-family: var(--font-heading);
     font-size: 18px;
     font-weight: 600;
+  }
+
+  .stat-green {
+    color: #22c55e;
   }
 
   .stat-label {

@@ -21,12 +21,18 @@ const categoryCounts = categoryMeta.map((cat) => ({
 }));
 
 const latestVersion = releases.length > 0 ? releases[0].version : "N/A";
+const now = new Date();
+const thisMonthCount = releases.filter((r) => {
+  const d = new Date(r.date);
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+}).length;
 const buildTimestamp = Date.now();
 ---
 <Layout title="Claude Code Release Notes">
   <Sidebar
     categories={categoryCounts}
     totalReleases={releases.length}
+    thisMonthCount={thisMonthCount}
     latestVersion={latestVersion}
   />
 
