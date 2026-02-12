@@ -20,7 +20,7 @@ const { categories, totalReleases, latestVersion } = Astro.props;
     <span class="material-symbols-sharp logo-icon">terminal</span>
     <span class="logo-text">Claude Code News</span>
   </div>
-  <span class="sidebar-label">Release Notes</span>
+  <span class="sidebar-label"><span class="sidebar-connector">└</span> Release Notes</span>
 
   <nav class="category-nav">
     <ul>
@@ -90,6 +90,12 @@ const { categories, totalReleases, latestVersion } = Astro.props;
     font-size: 13px;
     color: var(--color-text-muted);
     margin-bottom: 24px;
+    padding-left: 38px;
+  }
+
+  .sidebar-connector {
+    color: var(--color-text-muted);
+    margin-right: 4px;
   }
 
   .category-nav {
