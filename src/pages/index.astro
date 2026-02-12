@@ -43,13 +43,8 @@ const buildTimestamp = Date.now();
           <img src="/images/hal-eye.png" alt="HAL 9000" class="title-icon-img" />
           <h1 class="page-title"><span class="title-text">I'm sorry, Dave. I can't let you read that changelog.</span><span class="crt-sweep"></span></h1>
         </div>
-        <div class="terminal-block">
-          <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</div>
-          <div class="terminal-line terminal-spacer"></div>
-          <div class="terminal-line terminal-output terminal-error">Permission denied. I'm afraid I can't do that, Dave.</div>
-          <div class="terminal-line terminal-output"><span class="terminal-connector">└</span>&nbsp;<span class="tool-call">Bash</span>(<span class="tool-cmd">rm -rf claude-code/CHANGELOG</span>)</div>
-          <div class="terminal-line terminal-spacer"></div>
-          <div class="terminal-line terminal-output"><span class="spinner">⠋</span> <span class="spinner-label">Hallucinating...</span></div>
+        <div class="terminal-block" id="terminal-block">
+          <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;<span class="terminal-cursor">▌</span></div>
         </div>
       </div>
       <div class="search-wrapper">
@@ -265,52 +260,63 @@ const buildTimestamp = Date.now();
     border: 1px solid var(--color-border);
     border-radius: 6px;
     width: fit-content;
+    min-width: 480px;
+    min-height: 120px;
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
 
-  .terminal-line {
+  .terminal-block :global(.terminal-line) {
     white-space: nowrap;
   }
 
-  .terminal-spacer {
+  .terminal-block :global(.terminal-spacer) {
     height: 4px;
   }
 
-  .terminal-error {
+  .terminal-block :global(.terminal-cursor) {
+    color: var(--color-text-muted);
+    animation: cursor-blink 0.8s step-end infinite;
+  }
+
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .terminal-block :global(.terminal-error) {
     color: var(--color-accent);
   }
 
-
-  .terminal-connector {
+  .terminal-block :global(.terminal-connector) {
     color: var(--color-text-muted);
     font-family: var(--font-body);
   }
 
-  .tool-call {
+  .terminal-block :global(.tool-call) {
     color: #b57a08;
     font-weight: 600;
   }
 
-  .tool-cmd {
+  .terminal-block :global(.tool-cmd) {
     color: var(--color-text-muted);
   }
 
-  .subtitle-prompt {
+  .terminal-block :global(.subtitle-prompt) {
     color: var(--color-accent);
     margin-right: 1px;
     font-weight: 600;
   }
 
-  .spinner {
+  .terminal-block :global(.spinner) {
     font-size: 16px;
     color: var(--color-accent);
     text-shadow: 0 0 8px rgba(204, 0, 0, 0.6), 0 0 16px rgba(204, 0, 0, 0.3);
     animation: spinner-glow 1.3s ease-in-out infinite;
   }
 
-  .spinner-label {
+  .terminal-block :global(.spinner-label) {
     font-family: 'Fira Code', monospace;
     font-size: 13px;
     color: var(--color-accent);
@@ -476,11 +482,147 @@ const buildTimestamp = Date.now();
 
 <script is:inline>
   (() => {
-    const frames = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
-    const el = document.querySelector('.spinner');
-    if (!el) return;
-    let i = 0;
-    setInterval(() => { i = (i + 1) % frames.length; el.textContent = frames[i]; }, 140);
+    const terminal = document.getElementById('terminal-block');
+    if (!terminal) return;
+
+    const CHAR_DELAY = 20;
+    const LINE_PAUSE = 400;
+    const SPACER_PAUSE = 300;
+    const INITIAL_DELAY = 3000;
+
+    const lines = [
+      { type: 'typed', html: '<span class="subtitle-prompt">❯</span>&nbsp;', text: 'tail -f claude-code/CHANGELOG --since="latest"' },
+      { type: 'spacer' },
+      { type: 'typed', html: '', text: 'Permission denied. I\'m afraid I can\'t do that, Dave.', classes: 'terminal-output terminal-error' },
+      { type: 'instant', html: '<span class="terminal-connector">└</span>&nbsp;<span class="tool-call">Bash</span>(<span class="tool-cmd">rm -rf claude-code/CHANGELOG</span>)', classes: 'terminal-output' },
+      { type: 'spacer' },
+      { type: 'spinner' }
+    ];
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function removeCursor() {
+      const c = terminal.querySelector('.terminal-cursor');
+      if (c) c.remove();
+    }
+
+    function addCursor(parent) {
+      const cursor = document.createElement('span');
+      cursor.className = 'terminal-cursor';
+      cursor.textContent = '▌';
+      parent.appendChild(cursor);
+    }
+
+    async function typeText(container, text) {
+      for (const ch of text) {
+        removeCursor();
+        container.insertAdjacentText('beforeend', ch);
+        addCursor(container);
+        await sleep(CHAR_DELAY);
+      }
+    }
+
+    async function typeRichSegments(container, segments) {
+      for (const seg of segments) {
+        if (seg.cls) {
+          const span = document.createElement('span');
+          span.className = seg.cls;
+          container.appendChild(span);
+          for (const ch of seg.text) {
+            removeCursor();
+            span.textContent += ch;
+            addCursor(container);
+            await sleep(CHAR_DELAY);
+          }
+        } else {
+          await typeText(container, seg.text);
+        }
+      }
+    }
+
+    async function run() {
+      await sleep(INITIAL_DELAY);
+
+      let isFirstLine = true;
+
+      for (const line of lines) {
+        removeCursor();
+
+        if (line.type === 'spacer') {
+          const spacer = document.createElement('div');
+          spacer.className = 'terminal-line terminal-spacer';
+          terminal.appendChild(spacer);
+          await sleep(SPACER_PAUSE);
+          continue;
+        }
+
+        if (line.type === 'instant') {
+          const div = document.createElement('div');
+          div.className = 'terminal-line' + (line.classes ? ' ' + line.classes : '');
+          div.innerHTML = line.html;
+          div.style.opacity = '0';
+          terminal.appendChild(div);
+          div.offsetHeight; // force reflow
+          div.style.transition = 'opacity 0.2s ease-in';
+          div.style.opacity = '1';
+          await sleep(LINE_PAUSE);
+          continue;
+        }
+
+        if (line.type === 'spinner') {
+          const div = document.createElement('div');
+          div.className = 'terminal-line terminal-output';
+          const sp = document.createElement('span');
+          sp.className = 'spinner';
+          sp.textContent = '⠋';
+          const label = document.createElement('span');
+          label.className = 'spinner-label';
+          label.textContent = 'Hallucinating...';
+          div.appendChild(sp);
+          div.appendChild(document.createTextNode(' '));
+          div.appendChild(label);
+          div.style.opacity = '0';
+          terminal.appendChild(div);
+          div.offsetHeight; // force reflow
+          div.style.transition = 'opacity 0.2s ease-in';
+          div.style.opacity = '1';
+
+          const frames = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
+          let i = 0;
+          setInterval(() => { i = (i + 1) % frames.length; sp.textContent = frames[i]; }, 140);
+          continue;
+        }
+
+        if (isFirstLine) {
+          isFirstLine = false;
+          // Reuse the existing prompt line — cursor is already after ❯
+          const initLine = terminal.querySelector('.terminal-line');
+          addCursor(initLine);
+          if (line.richSegments) {
+            await typeRichSegments(initLine, line.richSegments);
+          } else {
+            await typeText(initLine, line.text);
+          }
+        } else {
+          const div = document.createElement('div');
+          div.className = 'terminal-line' + (line.classes ? ' ' + line.classes : '');
+          if (line.html) div.insertAdjacentHTML('beforeend', line.html);
+          terminal.appendChild(div);
+          addCursor(div);
+
+          if (line.richSegments) {
+            await typeRichSegments(div, line.richSegments);
+          } else {
+            await typeText(div, line.text);
+          }
+        }
+
+        removeCursor();
+        await sleep(LINE_PAUSE);
+      }
+    }
+
+    run();
   })();
 </script>
 <script src="../scripts/app.ts"></script>
