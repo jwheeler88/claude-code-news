@@ -39,7 +39,10 @@ const buildTimestamp = Date.now();
   <main class="content">
     <header class="content-header">
       <div class="header-text">
-        <h1 class="page-title"><span class="material-symbols-sharp title-icon">radio_button_checked</span><span class="title-text">Monitor the changelog, HAL.</span><span class="crt-sweep"></span></h1>
+        <div class="title-row">
+          <img src="/images/hal-eye.png" alt="HAL 9000" class="title-icon-img" />
+          <h1 class="page-title"><span class="title-text">I'm sorry, Dave. I can't let you read that changelog.</span><span class="crt-sweep"></span></h1>
+        </div>
         <div class="terminal-block">
           <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</div>
           <div class="terminal-line terminal-spacer"></div>
@@ -182,12 +185,17 @@ const buildTimestamp = Date.now();
     z-index: 1;
   }
 
-  .title-icon {
-    position: relative;
-    z-index: 1;
-    margin-right: 8px;
-    font-size: 28px;
-    vertical-align: -4px;
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .title-icon-img {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    clip-path: circle(38%);
   }
 
   @keyframes crt-flicker {
