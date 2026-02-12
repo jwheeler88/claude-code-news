@@ -39,11 +39,11 @@ const buildTimestamp = Date.now();
   <main class="content">
     <header class="content-header">
       <div class="header-text">
-        <h1 class="page-title"><span class="material-symbols-sharp title-icon">radio_button_checked</span><span class="title-text">I'm sorry, Dave. I can't ignore that changelog.</span><span class="crt-sweep"></span></h1>
+        <h1 class="page-title"><span class="material-symbols-sharp title-icon">radio_button_checked</span><span class="title-text">Monitor the changelog, HAL.</span><span class="crt-sweep"></span></h1>
         <div class="terminal-block">
-          <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;rm -rf claude-code/CHANGELOG</div>
-          <div class="terminal-line terminal-output terminal-error">Permission denied. I'm afraid I can't do that, Dave.</div>
           <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</div>
+          <div class="terminal-line terminal-output terminal-error">Permission denied. I'm afraid I can't do that, Dave.</div>
+          <div class="terminal-line terminal-output"><span class="terminal-connector">└</span>&nbsp;<span class="tool-call">Bash</span>(<span class="tool-cmd">rm -rf claude-code/CHANGELOG</span>)</div>
           <div class="terminal-line terminal-output"><span class="spinner">⠋</span> <span class="spinner-label">Hallucinating...</span></div>
         </div>
       </div>
@@ -266,6 +266,20 @@ const buildTimestamp = Date.now();
 
   .terminal-error {
     color: var(--color-accent);
+  }
+
+
+  .terminal-connector {
+    color: var(--color-text-muted);
+  }
+
+  .tool-call {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+
+  .tool-cmd {
+    color: var(--color-text-muted);
   }
 
   .subtitle-prompt {
