@@ -1,0 +1,167 @@
+---
+import type { Release } from "../lib/types";
+
+interface Props {
+  release: Release;
+}
+
+const { release } = Astro.props;
+
+const categoryLabels: Record<string, string> = {
+  feature: "Feature",
+  "bug-fix": "Bug Fix",
+  performance: "Performance",
+  security: "Security",
+  improvement: "Improvement",
+};
+
+const uniqueCategories = [...new Set(release.items.map((item) => item.category))];
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+---
+<article class="release-card" data-version={release.version} data-categories={JSON.stringify(uniqueCategories)}>
+  <header class="card-header">
+    <div class="card-title-row">
+      <h2 class="version">{release.version}</h2>
+      <time class="date" datetime={release.date}>{formatDate(release.date)}</time>
+    </div>
+    <div class="tags">
+      {uniqueCategories.map((cat) => (
+        <span class={`tag tag-${cat}`}>{categoryLabels[cat]}</span>
+      ))}
+    </div>
+  </header>
+  <ul class="changes">
+    {release.items.map((item) => (
+      <li class="change-item" data-category={item.category}>
+        <span class="item-text">{item.text}</span>
+        <button class="copy-btn" data-copy={item.text} aria-label="Copy to clipboard">
+          <span class="material-symbols-sharp">content_copy</span>
+        </button>
+      </li>
+    ))}
+  </ul>
+</article>
+
+<style>
+  .release-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .card-header {
+    margin-bottom: 16px;
+  }
+
+  .card-title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .version {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .date {
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tag-feature {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+  }
+
+  .tag-bug-fix {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+  }
+
+  .tag-performance {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+  }
+
+  .tag-security {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+  }
+
+  .tag-improvement {
+    background: rgba(139, 92, 246, 0.15);
+    color: #8b5cf6;
+  }
+
+  .changes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .change-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .change-item:hover {
+    background: var(--color-surface-hover);
+    border-left-color: var(--color-accent);
+  }
+
+  .item-text {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .copy-btn {
+    opacity: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 2px;
+    flex-shrink: 0;
+    transition: opacity 0.15s, color 0.15s;
+  }
+
+  .change-item:hover .copy-btn {
+    opacity: 1;
+  }
+
+  .copy-btn:hover {
+    color: var(--color-accent);
+  }
+</style>
