@@ -39,8 +39,11 @@ const buildTimestamp = Date.now();
   <main class="content">
     <header class="content-header">
       <div class="header-text">
-        <h1 class="page-title">Open the changelog, HAL...</h1>
-        <p class="page-subtitle"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest" <span class="subtitle-comment"># Keep thinking...</span></p>
+        <h1 class="page-title">Monitor the changelog, HAL.</h1>
+        <div class="terminal-block">
+          <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</div>
+          <div class="terminal-line terminal-output"><span class="spinner">⠋</span> <span class="spinner-label">Hallucinating...</span></div>
+        </div>
       </div>
       <div class="search-wrapper">
         <span class="material-symbols-sharp search-icon">search</span>
@@ -167,17 +170,23 @@ const buildTimestamp = Date.now();
     96.5% { opacity: 1; }
   }
 
-  .page-subtitle {
-    font-family: 'Monaco', monospace;
+  .terminal-block {
+    font-family: 'Fira Code', monospace;
     font-size: 13px;
     color: var(--color-text-muted);
     margin-top: 8px;
-    padding: 8px 14px;
+    padding: 10px 14px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--color-border);
     border-radius: 6px;
-    display: block;
     width: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .terminal-line {
+    white-space: nowrap;
   }
 
   .subtitle-prompt {
@@ -186,8 +195,24 @@ const buildTimestamp = Date.now();
     font-weight: 600;
   }
 
-  .subtitle-comment {
-    color: #2d6b1e;
+  .spinner {
+    font-size: 16px;
+    color: var(--color-accent);
+    text-shadow: 0 0 8px rgba(65, 217, 31, 0.6), 0 0 16px rgba(65, 217, 31, 0.3);
+    animation: spinner-glow 2s ease-in-out infinite;
+  }
+
+  .spinner-label {
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--color-accent);
+    text-shadow: 0 0 6px rgba(65, 217, 31, 0.3);
+    animation: spinner-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes spinner-glow {
+    0%, 100% { opacity: 0.6; text-shadow: 0 0 6px rgba(65, 217, 31, 0.3); }
+    50% { opacity: 1; text-shadow: 0 0 8px rgba(65, 217, 31, 0.5); }
   }
 
   @keyframes glitch {
@@ -341,5 +366,14 @@ const buildTimestamp = Date.now();
   }
 </style>
 
+<script is:inline>
+  (() => {
+    const frames = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
+    const el = document.querySelector('.spinner');
+    if (!el) return;
+    let i = 0;
+    setInterval(() => { i = (i + 1) % frames.length; el.textContent = frames[i]; }, 140);
+  })();
+</script>
 <script src="../scripts/app.ts"></script>
 <script src="../scripts/toast.ts"></script>
