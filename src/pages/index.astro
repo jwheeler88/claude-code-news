@@ -40,7 +40,7 @@ const buildTimestamp = Date.now();
     <header class="content-header">
       <div class="header-text">
         <h1 class="page-title">Release Notes</h1>
-        <p class="page-subtitle">Stay up to date with the latest changes to Claude Code</p>
+        <p class="page-subtitle"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</p>
       </div>
       <div class="search-wrapper">
         <span class="material-symbols-sharp search-icon">search</span>
@@ -148,7 +148,7 @@ const buildTimestamp = Date.now();
       0 0 8px rgba(65, 217, 31, 0.6),
       0 0 20px rgba(65, 217, 31, 0.3),
       0 0 40px rgba(65, 217, 31, 0.1);
-    animation: text-flicker 6s infinite;
+    animation: text-flicker 6s infinite, glitch 8s infinite;
   }
 
   @keyframes text-flicker {
@@ -168,11 +168,22 @@ const buildTimestamp = Date.now();
   }
 
   .page-subtitle {
-    font-size: 14px;
+    font-family: 'Monaco', monospace;
+    font-size: 13px;
     color: var(--color-text-muted);
-    margin-top: 4px;
-    position: relative;
-    animation: glitch 8s infinite;
+    margin-top: 8px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    display: block;
+    width: fit-content;
+  }
+
+  .subtitle-prompt {
+    color: var(--color-accent);
+    margin-right: 1px;
+    font-weight: 600;
   }
 
   @keyframes glitch {
@@ -186,21 +197,21 @@ const buildTimestamp = Date.now();
     }
     81% {
       text-shadow:
-        4px 0 rgba(65, 217, 31, 0.6),
-        -4px 0 rgba(6, 182, 212, 0.6);
-      transform: translate(-4px, 0);
+        4px 0 rgba(65, 217, 31, 0.8),
+        -4px 0 rgba(6, 182, 212, 0.8);
+      transform: translate(-3px, 0);
     }
     82% {
       text-shadow:
-        -4px 0 rgba(65, 217, 31, 0.6),
-        4px 0 rgba(6, 182, 212, 0.6);
-      transform: translate(5px, 0);
+        -4px 0 rgba(65, 217, 31, 0.8),
+        4px 0 rgba(6, 182, 212, 0.8);
+      transform: translate(3px, 0);
     }
     82.5% {
       text-shadow:
-        3px 0 rgba(65, 217, 31, 0.5),
-        -3px 0 rgba(6, 182, 212, 0.5);
-      transform: translate(-3px, 0);
+        3px 0 rgba(65, 217, 31, 0.7),
+        -3px 0 rgba(6, 182, 212, 0.7);
+      transform: translate(-2px, 0);
     }
     83% {
       text-shadow: none;
@@ -212,15 +223,15 @@ const buildTimestamp = Date.now();
     }
     91% {
       text-shadow:
-        3px 0 rgba(65, 217, 31, 0.5),
-        -3px 0 rgba(239, 68, 68, 0.5);
-      transform: translate(4px, 0);
+        3px 0 rgba(65, 217, 31, 0.7),
+        -3px 0 rgba(239, 68, 68, 0.7);
+      transform: translate(3px, 0);
     }
     91.5% {
       text-shadow:
-        -3px 0 rgba(65, 217, 31, 0.5),
-        3px 0 rgba(239, 68, 68, 0.5);
-      transform: translate(-3px, 0);
+        -3px 0 rgba(65, 217, 31, 0.7),
+        3px 0 rgba(239, 68, 68, 0.7);
+      transform: translate(-2px, 0);
     }
     92% {
       text-shadow: none;

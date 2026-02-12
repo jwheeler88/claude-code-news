@@ -33,12 +33,15 @@ function renderInlineCode(text: string): string {
   <header class="card-header">
     <div class="card-title-row">
       <h2 class="version">{release.version}</h2>
-      <time class="date" datetime={release.date}>{formatDate(release.date)}</time>
+      <div class="tags">
+        {uniqueCategories.map((cat) => (
+          <span class={`tag tag-${cat}`}>{categoryLabels[cat]}</span>
+        ))}
+      </div>
     </div>
-    <div class="tags">
-      {uniqueCategories.map((cat) => (
-        <span class={`tag tag-${cat}`}>{categoryLabels[cat]}</span>
-      ))}
+    <div class="card-date-row">
+      <span class="date-connector">└</span>
+      <time class="date" datetime={release.date}>{formatDate(release.date)}</time>
     </div>
   </header>
   <ul class="changes">
@@ -71,15 +74,28 @@ function renderInlineCode(text: string): string {
 
   .card-title-row {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 12px;
-    margin-bottom: 8px;
+    flex-wrap: wrap;
   }
 
   .version {
     font-family: var(--font-heading);
     font-size: 20px;
     font-weight: 600;
+  }
+
+  .card-date-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-left: 4px;
+    margin-bottom: 4px;
+  }
+
+  .date-connector {
+    color: var(--color-text-muted);
+    font-size: 13px;
   }
 
   .date {
