@@ -39,7 +39,7 @@ const buildTimestamp = Date.now();
   <main class="content">
     <header class="content-header">
       <div class="header-text">
-        <h1 class="page-title"><span class="title-text">Monitor the changelog, HAL.</span><span class="crt-sweep"></span></h1>
+        <h1 class="page-title"><span class="material-symbols-sharp title-icon">psychology</span><span class="title-text">Monitor the changelog, HAL.</span><span class="crt-sweep"></span></h1>
         <div class="terminal-block">
           <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</div>
           <div class="terminal-line terminal-output"><span class="spinner">⠋</span> <span class="spinner-label">Hallucinating...</span></div>
@@ -189,6 +189,14 @@ const buildTimestamp = Date.now();
   .title-text {
     position: relative;
     z-index: 1;
+  }
+
+  .title-icon {
+    position: relative;
+    z-index: 1;
+    margin-right: 8px;
+    font-size: 28px;
+    vertical-align: -4px;
   }
 
   @keyframes crt-flicker {
