@@ -39,8 +39,8 @@ const buildTimestamp = Date.now();
   <main class="content">
     <header class="content-header">
       <div class="header-text">
-        <h1 class="page-title">Release Notes</h1>
-        <p class="page-subtitle"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</p>
+        <h1 class="page-title">Open the changelog, HAL...</h1>
+        <p class="page-subtitle"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest" <span class="subtitle-comment"># Keep thinking...</span></p>
       </div>
       <div class="search-wrapper">
         <span class="material-symbols-sharp search-icon">search</span>
@@ -184,6 +184,10 @@ const buildTimestamp = Date.now();
     color: var(--color-accent);
     margin-right: 1px;
     font-weight: 600;
+  }
+
+  .subtitle-comment {
+    color: #2d6b1e;
   }
 
   @keyframes glitch {
