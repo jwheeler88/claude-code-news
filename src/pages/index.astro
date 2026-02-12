@@ -39,7 +39,7 @@ const buildTimestamp = Date.now();
   <main class="content">
     <header class="content-header">
       <div class="header-text">
-        <h1 class="page-title">Monitor the changelog, HAL.</h1>
+        <h1 class="page-title"><span class="title-text">Monitor the changelog, HAL.</span><span class="crt-sweep"></span></h1>
         <div class="terminal-block">
           <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;tail -f claude-code/CHANGELOG --since="latest"</div>
           <div class="terminal-line terminal-output"><span class="spinner">⠋</span> <span class="spinner-label">Hallucinating...</span></div>
@@ -157,6 +157,38 @@ const buildTimestamp = Date.now();
     pointer-events: none;
     z-index: 1;
     animation: crt-flicker 4s infinite;
+  }
+
+  .crt-sweep {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(65, 217, 31, 0.15),
+      rgba(65, 217, 31, 0.3),
+      rgba(65, 217, 31, 0.15),
+      transparent
+    );
+    z-index: 2;
+    pointer-events: none;
+    animation: crt-sweep 4s ease-in-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes crt-sweep {
+    0% { top: -6px; opacity: 0; }
+    2% { opacity: 1; }
+    25% { top: 100%; opacity: 1; }
+    28% { opacity: 0; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  .title-text {
+    position: relative;
+    z-index: 1;
   }
 
   @keyframes crt-flicker {
