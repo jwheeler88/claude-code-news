@@ -34,15 +34,11 @@ function getMatchingWrappers(): HTMLElement[] {
 }
 
 function filterItems(wrapper: HTMLElement): void {
-  if (activeCategory === "all") {
-    wrapper.querySelectorAll<HTMLElement>(".change-item").forEach((item) => {
-      item.style.display = "";
-    });
-  } else {
-    wrapper.querySelectorAll<HTMLElement>(".change-item").forEach((item) => {
-      item.style.display = item.dataset.category === activeCategory ? "" : "none";
-    });
-  }
+  wrapper.querySelectorAll<HTMLElement>(".change-item").forEach((item) => {
+    const categoryMatch = activeCategory === "all" || item.dataset.category === activeCategory;
+    const searchMatch = !searchQuery || item.textContent?.toLowerCase().includes(searchQuery);
+    item.style.display = categoryMatch && searchMatch ? "" : "none";
+  });
 }
 
 function render(): void {
