@@ -60,6 +60,7 @@ const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props
   <a href="https://pencil.dev" target="_blank" rel="noopener noreferrer" class="pencil-attribution">
     <span class="pencil-label">Designed with</span>
     <img src="/images/pencil-logo.svg" alt="Pencil" class="pencil-logo" />
+    <span class="pencil-vibes"><span class="pencil-connector">└</span> (and vibes)</span>
   </a>
 </aside>
 
@@ -203,6 +204,19 @@ const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props
     font-size: 11px;
     color: var(--color-accent);
     letter-spacing: 0.02em;
+  }
+
+  .pencil-vibes {
+    font-family: 'Indie Flower', cursive;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-accent);
+    align-self: flex-start;
+  }
+
+  .pencil-connector {
+    color: var(--color-text-muted);
+    margin-right: 4px;
   }
 
   .pencil-logo {
