@@ -59,8 +59,10 @@ const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props
 
   <a href="https://pencil.dev" target="_blank" rel="noopener noreferrer" class="pencil-attribution">
     <span class="pencil-label">Designed with</span>
-    <img src="/images/pencil-logo.svg" alt="Pencil" class="pencil-logo" />
-    <span class="pencil-vibes"><span class="pencil-connector">└</span> (and vibes)</span>
+    <div class="pencil-logo-group">
+      <img src="/images/pencil-logo.svg" alt="Pencil" class="pencil-logo" />
+      <span class="pencil-vibes">▪ (and vibes)</span>
+    </div>
   </a>
 </aside>
 
@@ -190,7 +192,7 @@ const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props
     align-items: flex-start;
     gap: 6px;
     margin-top: 16px;
-    padding: 12px;
+    padding: 6px 12px 2px;
     border-radius: 8px;
     text-decoration: none;
     transition: background 0.15s;
@@ -206,12 +208,20 @@ const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props
     letter-spacing: 0.02em;
   }
 
+  .pencil-logo-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
   .pencil-vibes {
     font-family: 'Indie Flower', cursive;
     font-size: 15px;
     font-weight: 600;
     color: var(--color-accent);
     align-self: flex-start;
+    padding-left: 8px;
   }
 
   .pencil-connector {
@@ -224,6 +234,8 @@ const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props
     width: auto;
     opacity: 0.7;
     transition: opacity 0.15s;
+    border-left: 3px dotted var(--color-text-muted);
+    padding-left: 6px;
   }
 
   .pencil-attribution:hover .pencil-logo {
