@@ -34,10 +34,19 @@ function getMatchingWrappers(): HTMLElement[] {
 }
 
 function filterItems(wrapper: HTMLElement): void {
+  const visibleCategories = new Set<string>();
+
   wrapper.querySelectorAll<HTMLElement>(".change-item").forEach((item) => {
     const categoryMatch = activeCategory === "all" || item.dataset.category === activeCategory;
     const searchMatch = !searchQuery || item.textContent?.toLowerCase().includes(searchQuery);
-    item.style.display = categoryMatch && searchMatch ? "" : "none";
+    const visible = categoryMatch && searchMatch;
+    item.style.display = visible ? "" : "none";
+    if (visible && item.dataset.category) visibleCategories.add(item.dataset.category);
+  });
+
+  wrapper.querySelectorAll<HTMLElement>(".tag").forEach((tag) => {
+    const tagCategory = tag.className.match(/tag-(\S+)/)?.[1] || "";
+    tag.style.display = visibleCategories.has(tagCategory) ? "" : "none";
   });
 }
 
