@@ -313,8 +313,6 @@ const buildTimestamp = Date.now();
   .terminal-block :global(.spinner) {
     font-size: 16px;
     color: var(--color-accent);
-    text-shadow: 0 0 8px rgba(204, 0, 0, 0.6), 0 0 16px rgba(204, 0, 0, 0.3);
-    animation: spinner-glow 1.3s ease-in-out infinite;
   }
 
   .terminal-block :global(.spinner-label) {
@@ -616,7 +614,7 @@ const buildTimestamp = Date.now();
           if (sp) {
             const frames = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
             let i = 0;
-            setInterval(() => { i = (i + 1) % frames.length; sp.textContent = frames[i]; }, 140);
+            setInterval(() => { i = (i + 1) % frames.length; sp.textContent = frames[i]; }, 80);
           }
         }
 
