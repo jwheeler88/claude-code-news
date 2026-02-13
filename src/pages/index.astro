@@ -514,9 +514,18 @@ const buildTimestamp = Date.now();
       { type: 'typed', html: '<span class="subtitle-prompt">❯</span>&nbsp;', text: 'tail -f claude-code/CHANGELOG --since="latest"' },
       { type: 'spacer' },
       { type: 'typed', html: '', text: 'Permission denied. I\'m afraid I can\'t do that, Dave.', classes: 'terminal-output terminal-error' },
-      { type: 'instant', html: '<span class="terminal-connector">└</span>&nbsp;<span class="tool-call">Bash</span>(<span class="tool-cmd">rm -rf claude-code/CHANGELOG</span>)', classes: 'terminal-output' },
+      { type: 'typed', html: '<span class="terminal-connector">└</span>&nbsp;', classes: 'terminal-output', richSegments: [
+        { text: 'Bash', cls: 'tool-call' },
+        { text: '(' },
+        { text: 'rm -rf claude-code/CHANGELOG', cls: 'tool-cmd' },
+        { text: ')' }
+      ]},
       { type: 'spacer' },
-      { type: 'spinner' }
+      { type: 'typed', html: '', classes: 'terminal-output', richSegments: [
+        { text: '⠋', cls: 'spinner' },
+        { text: ' ' },
+        { text: 'Hallucinating...', cls: 'spinner-label' }
+      ], then: 'spinner' }
     ];
 
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -576,43 +585,6 @@ const buildTimestamp = Date.now();
           continue;
         }
 
-        if (line.type === 'instant') {
-          const div = document.createElement('div');
-          div.className = 'terminal-line' + (line.classes ? ' ' + line.classes : '');
-          div.innerHTML = line.html;
-          div.style.opacity = '0';
-          terminal.appendChild(div);
-          div.offsetHeight; // force reflow
-          div.style.transition = 'opacity 0.2s ease-in';
-          div.style.opacity = '1';
-          await sleep(LINE_PAUSE);
-          continue;
-        }
-
-        if (line.type === 'spinner') {
-          const div = document.createElement('div');
-          div.className = 'terminal-line terminal-output';
-          const sp = document.createElement('span');
-          sp.className = 'spinner';
-          sp.textContent = '⠋';
-          const label = document.createElement('span');
-          label.className = 'spinner-label';
-          label.textContent = 'Hallucinating...';
-          div.appendChild(sp);
-          div.appendChild(document.createTextNode(' '));
-          div.appendChild(label);
-          div.style.opacity = '0';
-          terminal.appendChild(div);
-          div.offsetHeight; // force reflow
-          div.style.transition = 'opacity 0.2s ease-in';
-          div.style.opacity = '1';
-
-          const frames = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
-          let i = 0;
-          setInterval(() => { i = (i + 1) % frames.length; sp.textContent = frames[i]; }, 140);
-          continue;
-        }
-
         if (isFirstLine) {
           isFirstLine = false;
           // Reuse the existing prompt line — cursor is already after ❯
@@ -638,6 +610,16 @@ const buildTimestamp = Date.now();
         }
 
         removeCursor();
+
+        if (line.then === 'spinner') {
+          const sp = terminal.querySelector('.spinner');
+          if (sp) {
+            const frames = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'];
+            let i = 0;
+            setInterval(() => { i = (i + 1) % frames.length; sp.textContent = frames[i]; }, 140);
+          }
+        }
+
         await sleep(LINE_PAUSE);
       }
     }
