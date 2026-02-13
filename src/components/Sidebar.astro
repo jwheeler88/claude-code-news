@@ -56,6 +56,11 @@ const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props
       <span class="stat-label">Latest Version</span>
     </div>
   </div>
+
+  <a href="https://pencil.dev" target="_blank" rel="noopener noreferrer" class="pencil-attribution">
+    <span class="pencil-label">Designed with</span>
+    <img src="/images/pencil-logo.svg" alt="Pencil" class="pencil-logo" />
+  </a>
 </aside>
 
 <style>
@@ -176,5 +181,38 @@ const { categories, totalReleases, thisMonthCount, latestVersion } = Astro.props
   .stat-label {
     font-size: 12px;
     color: var(--color-text-muted);
+  }
+
+  .pencil-attribution {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .pencil-attribution:hover {
+    background: var(--color-surface-hover);
+  }
+
+  .pencil-label {
+    font-size: 11px;
+    color: var(--color-accent);
+    letter-spacing: 0.02em;
+  }
+
+  .pencil-logo {
+    height: 18px;
+    width: auto;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+
+  .pencil-attribution:hover .pencil-logo {
+    opacity: 1;
   }
 </style>
