@@ -56,6 +56,7 @@ const buildTimestamp = Date.now();
           placeholder="Search releases..."
           autocomplete="off"
         />
+        <kbd class="search-kbd" id="search-kbd"></kbd>
       </div>
     </header>
 
@@ -413,6 +414,25 @@ const buildTimestamp = Date.now();
     border-color: var(--color-accent);
   }
 
+  .search-kbd {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--color-text-muted);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    pointer-events: none;
+  }
+
+  .search-input:focus + .search-kbd {
+    display: none;
+  }
+
   .search-input::placeholder {
     color: var(--color-text-muted);
   }
@@ -624,6 +644,10 @@ const buildTimestamp = Date.now();
 
     run();
   })();
+</script>
+<script is:inline>
+  document.getElementById('search-kbd').textContent =
+    navigator.platform.includes('Mac') ? '⌘K' : 'Ctrl+K';
 </script>
 <script src="../scripts/app.ts"></script>
 <script src="../scripts/toast.ts"></script>

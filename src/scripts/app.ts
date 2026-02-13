@@ -91,6 +91,24 @@ searchInput.addEventListener("input", () => {
   }, 200);
 });
 
+// Cmd/Ctrl+K to focus search
+document.addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+    e.preventDefault();
+    searchInput.focus();
+  }
+});
+
+// ESC to clear search
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    searchInput.value = "";
+    searchQuery = "";
+    visibleCount = BATCH_SIZE;
+    render();
+  }
+});
+
 // Load more
 loadMoreBtn.addEventListener("click", () => {
   visibleCount += BATCH_SIZE;
