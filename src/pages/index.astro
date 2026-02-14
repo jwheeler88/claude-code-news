@@ -44,7 +44,8 @@ const loadedVersion = latestVersion;
       <div class="header-text">
         <div class="title-row">
           <img src="/images/hal-eye.png" alt="HAL 9000" class="title-icon-img" />
-          <h1 class="page-title"><span class="title-text"><span class="title-desktop">I'm sorry, Dave. I can't let you read that changelog.</span><span class="title-mobile">Claude Code</span></span><span class="crt-sweep"></span></h1>
+          <span class="material-symbols-sharp title-icon-mobile">terminal</span>
+          <h1 class="page-title"><span class="title-text"><span class="title-desktop">I'm sorry, Dave. I can't let you read that changelog.</span><span class="title-mobile">Claude Code News</span></span><span class="crt-sweep"></span></h1>
         </div>
         <div class="terminal-block" id="terminal-block">
           <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;<span class="terminal-cursor">▌</span></div>
@@ -545,6 +546,10 @@ const loadedVersion = latestVersion;
     display: none;
   }
 
+  .title-icon-mobile {
+    display: none;
+  }
+
   .mobile-attribution {
     display: none;
   }
@@ -603,6 +608,16 @@ const loadedVersion = latestVersion;
 
     .title-mobile {
       display: inline;
+    }
+
+    .title-icon-img {
+      display: none;
+    }
+
+    .title-icon-mobile {
+      display: inline;
+      font-size: 22px;
+      color: var(--color-accent);
     }
 
     .terminal-block {
