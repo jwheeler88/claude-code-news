@@ -86,6 +86,12 @@ const loadedVersion = latestVersion;
     <div id="load-more-container" class="load-more-container">
       <button id="load-more-btn" class="load-more-btn">Load more</button>
     </div>
+
+    <footer class="mobile-attribution">
+      <a href="https://pencil.dev" target="_blank" rel="noopener noreferrer">
+        Designed with Pencil
+      </a>
+    </footer>
   </main>
 
   <div id="toast" class="toast" hidden>
@@ -539,6 +545,10 @@ const loadedVersion = latestVersion;
     display: none;
   }
 
+  .mobile-attribution {
+    display: none;
+  }
+
   @media (max-width: 1023px) {
     .content {
       padding: 0 16px 24px;
@@ -667,6 +677,30 @@ const loadedVersion = latestVersion;
 
     .load-more-btn {
       width: 100%;
+    }
+
+    .toast {
+      bottom: auto;
+      top: 100px;
+      right: 16px;
+      left: 16px;
+    }
+
+    .mobile-attribution {
+      display: block;
+      text-align: center;
+      padding: 24px 0;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .mobile-attribution a {
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+
+    .mobile-attribution a:hover {
+      color: var(--color-accent);
     }
   }
 </style>
