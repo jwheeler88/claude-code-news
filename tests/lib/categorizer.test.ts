@@ -46,8 +46,16 @@ describe("categorize", () => {
     expect(categorize("Prevent command injection attacks")).toBe("security");
   });
 
-  it("defaults to improvement", () => {
-    expect(categorize("Updated documentation links")).toBe("improvement");
+  it('classifies "Improved ..." as improvement', () => {
+    expect(categorize("Improved error messages for failed commands")).toBe("improvement");
+  });
+
+  it('classifies "Improve ..." as improvement', () => {
+    expect(categorize("Improve tab completion accuracy")).toBe("improvement");
+  });
+
+  it("defaults to misc", () => {
+    expect(categorize("Updated documentation links")).toBe("misc");
   });
 
   it("is case-insensitive for keywords", () => {

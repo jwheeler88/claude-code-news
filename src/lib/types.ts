@@ -1,4 +1,4 @@
-export type Category = "feature" | "bug-fix" | "performance" | "security" | "improvement";
+export type Category = "feature" | "bug-fix" | "performance" | "security" | "improvement" | "misc";
 
 export interface ChangeItem {
   text: string;

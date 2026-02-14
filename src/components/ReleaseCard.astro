@@ -12,7 +12,8 @@ const categoryLabels: Record<string, string> = {
   "bug-fix": "Bug Fix",
   performance: "Performance",
   security: "Security",
-  improvement: "Misc",
+  improvement: "Improvement",
+  misc: "Misc",
 };
 
 const uniqueCategories = [...new Set(release.items.map((item) => item.category))];
@@ -141,6 +142,11 @@ function renderInlineCode(text: string): string {
   }
 
   .tag-improvement {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+  }
+
+  .tag-misc {
     background: rgba(180, 180, 180, 0.15);
     color: #a0a0a0;
   }
