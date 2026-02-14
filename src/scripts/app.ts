@@ -9,6 +9,7 @@ const releaseList = document.getElementById("release-list")!;
 const loadMoreBtn = document.getElementById("load-more-btn")!;
 const loadMoreContainer = document.getElementById("load-more-container")!;
 const navItems = document.querySelectorAll<HTMLButtonElement>(".nav-item");
+const mobileNavPills = document.querySelectorAll<HTMLButtonElement>(".pill");
 const releaseWrappers = Array.from(releaseList.querySelectorAll<HTMLElement>(".release-wrapper"));
 
 function getMatchingWrappers(): HTMLElement[] {
@@ -93,15 +94,21 @@ function render(): void {
   history.replaceState(null, "", url);
 }
 
-// Category navigation
+// Category navigation — sync sidebar and mobile pills
+function setActiveCategory(category: string): void {
+  activeCategory = category;
+  navItems.forEach((b) => b.classList.toggle("active", b.dataset.category === category));
+  mobileNavPills.forEach((b) => b.classList.toggle("active", b.dataset.category === category));
+  visibleCount = BATCH_SIZE;
+  render();
+}
+
 navItems.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    navItems.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeCategory = btn.dataset.category || "all";
-    visibleCount = BATCH_SIZE;
-    render();
-  });
+  btn.addEventListener("click", () => setActiveCategory(btn.dataset.category || "all"));
+});
+
+mobileNavPills.forEach((btn) => {
+  btn.addEventListener("click", () => setActiveCategory(btn.dataset.category || "all"));
 });
 
 // Search
