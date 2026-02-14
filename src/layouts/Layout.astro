@@ -70,4 +70,10 @@ const { title } = Astro.props;
   ul {
     list-style: none;
   }
+
+  @media (max-width: 1023px) {
+    :root {
+      --sidebar-width: 0px;
+    }
+  }
 </style>
