@@ -49,12 +49,15 @@ const loadedVersion = latestVersion;
       <div class="header-text">
         <div class="title-row">
           <img src="/images/hal-eye.png" alt="HAL 9000" class="title-icon-img" />
-          <h1 class="page-title"><span class="title-text">I'm sorry, Dave. I can't let you read that changelog.</span><span class="crt-sweep"></span></h1>
+          <h1 class="page-title"><span class="title-text"><span class="title-desktop">I'm sorry, Dave. I can't let you read that changelog.</span><span class="title-mobile">Claude Code</span></span><span class="crt-sweep"></span></h1>
         </div>
         <div class="terminal-block" id="terminal-block">
           <div class="terminal-line"><span class="subtitle-prompt">❯</span>&nbsp;<span class="terminal-cursor">▌</span></div>
         </div>
       </div>
+      <button class="search-toggle" id="search-toggle" aria-label="Search">
+        <span class="material-symbols-sharp">search</span>
+      </button>
       <div class="search-wrapper">
         <span class="material-symbols-sharp search-icon">search</span>
         <input
@@ -65,6 +68,9 @@ const loadedVersion = latestVersion;
           autocomplete="off"
         />
         <kbd class="search-kbd" id="search-kbd"></kbd>
+        <button class="mobile-search-close" id="mobile-search-close" aria-label="Close search">
+          <span class="material-symbols-sharp">close</span>
+        </button>
       </div>
     </header>
 
@@ -514,6 +520,126 @@ const loadedVersion = latestVersion;
     cursor: pointer;
     padding: 0;
     display: flex;
+  }
+
+  .search-toggle {
+    display: none;
+  }
+
+  .mobile-search-close {
+    display: none;
+  }
+
+  .title-mobile {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .content {
+      padding: 0 16px 24px;
+    }
+
+    .content-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--color-bg);
+      padding: 12px 0;
+      margin-bottom: 0;
+      flex-wrap: wrap;
+    }
+
+    .header-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .title-row {
+      gap: 8px;
+    }
+
+    .page-title {
+      font-size: 16px;
+      animation: none;
+      text-shadow: none;
+      padding: 0;
+      margin: 0;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .page-title::before,
+    .page-title::after,
+    .crt-sweep {
+      display: none;
+    }
+
+    .title-desktop {
+      display: none;
+    }
+
+    .title-mobile {
+      display: inline;
+    }
+
+    .terminal-block {
+      display: none;
+    }
+
+    .search-wrapper {
+      display: none;
+    }
+
+    .search-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      padding: 8px;
+      flex-shrink: 0;
+    }
+
+    .search-toggle .material-symbols-sharp {
+      font-size: 24px;
+    }
+
+    /* Expanded search state */
+    .content-header.search-expanded .header-text,
+    .content-header.search-expanded .search-toggle {
+      display: none;
+    }
+
+    .content-header.search-expanded .search-wrapper {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+
+    .content-header.search-expanded .search-input {
+      width: 100%;
+      padding-right: 40px;
+    }
+
+    .content-header.search-expanded .search-kbd {
+      display: none;
+    }
+
+    .content-header.search-expanded .mobile-search-close {
+      display: flex;
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      padding: 4px;
+    }
   }
 </style>
 
