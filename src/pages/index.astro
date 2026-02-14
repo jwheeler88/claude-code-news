@@ -474,6 +474,21 @@ const loadedVersion = latestVersion;
     gap: 16px;
   }
 
+  .release-wrapper {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .release-wrapper.fade-out {
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+  }
+
+  .release-wrapper.fade-in {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
   .load-more-container {
     margin-top: 24px;
     text-align: center;

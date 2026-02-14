@@ -89,19 +89,39 @@ function filterItems(wrapper: HTMLElement): void {
 function render(): void {
   const matching = getMatchingWrappers();
 
-  // Hide all, then show matching up to visibleCount
-  releaseWrappers.forEach((w) => (w.style.display = "none"));
-  matching.forEach((w, i) => {
-    if (i < visibleCount) {
-      w.style.display = "";
-      filterItems(w);
+  // Phase 1: fade out wrappers that should hide
+  releaseWrappers.forEach((w) => {
+    const shouldShow = matching.indexOf(w) !== -1 && matching.indexOf(w) < visibleCount;
+    if (!shouldShow && w.style.display !== "none") {
+      w.classList.add("fade-out");
     }
   });
 
-  // Load more button
-  loadMoreContainer.style.display = matching.length > visibleCount ? "" : "none";
+  // Phase 2: after fade-out completes, hide them and show new ones
+  setTimeout(() => {
+    releaseWrappers.forEach((w) => {
+      w.classList.remove("fade-out");
+      w.style.display = "none";
+    });
 
-  // Update URL
+    matching.forEach((w, i) => {
+      if (i < visibleCount) {
+        const wasHidden = w.style.display === "none";
+        w.style.display = "";
+        filterItems(w);
+        if (wasHidden) {
+          w.classList.add("fade-in");
+          // Stagger: 30ms per card
+          setTimeout(() => w.classList.remove("fade-in"), 30 * (i + 1));
+        }
+      }
+    });
+
+    // Load more button
+    loadMoreContainer.style.display = matching.length > visibleCount ? "" : "none";
+  }, 150); // matches fade-out duration
+
+  // Update URL (immediate, don't wait for animation)
   const params = new URLSearchParams();
   if (activeCategory !== "all") params.set("category", activeCategory);
   if (searchQuery) params.set("q", searchQuery);
