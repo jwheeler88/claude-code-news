@@ -12,6 +12,10 @@ const loadMoreCount = document.getElementById("load-more-count")!;
 const navItems = document.querySelectorAll<HTMLButtonElement>(".nav-item");
 const mobileNavPills = document.querySelectorAll<HTMLButtonElement>(".pill");
 const releaseWrappers = Array.from(releaseList.querySelectorAll<HTMLElement>(".release-wrapper"));
+const statPrimaryValue = document.getElementById("stat-primary-value");
+const statPrimaryLabel = document.getElementById("stat-primary-label");
+const statSecondaryValue = document.getElementById("stat-secondary-value");
+const statSecondaryLabel = document.getElementById("stat-secondary-label");
 
 function highlightText(el: HTMLElement, query: string): void {
   clearHighlight(el);
@@ -193,6 +197,47 @@ function render(): void {
 
   // Set up entrance animations for newly visible cards
   requestAnimationFrame(() => observeNewCards());
+
+  // Update stats
+  updateStats();
+}
+
+function updateStats(): void {
+  if (!statPrimaryValue || !statPrimaryLabel || !statSecondaryValue || !statSecondaryLabel) return;
+
+  const matching = getMatchingWrappers();
+  const matchCount = matching.length;
+
+  if (searchQuery) {
+    // Search mode: show result count
+    const totalItems = matching.reduce((sum, w) => {
+      return sum + Array.from(w.querySelectorAll<HTMLElement>(".change-item")).filter(
+        (item) => item.style.display !== "none"
+      ).length;
+    }, 0);
+    statPrimaryValue.textContent = String(totalItems);
+    statPrimaryLabel.textContent = `Results for "${searchQuery}"`;
+    statSecondaryValue.textContent = String(matchCount);
+    statSecondaryLabel.textContent = "Releases Matched";
+  } else if (activeCategory !== "all") {
+    // Category mode: show category-specific stats
+    const totalItems = matching.reduce((sum, w) => {
+      return sum + Array.from(w.querySelectorAll<HTMLElement>(".change-item")).filter(
+        (item) => item.style.display !== "none"
+      ).length;
+    }, 0);
+    const label = document.querySelector(`.nav-item.active .nav-label`)?.textContent || activeCategory;
+    statPrimaryValue.textContent = String(totalItems);
+    statPrimaryLabel.textContent = `${label} Items`;
+    statSecondaryValue.textContent = String(matchCount);
+    statSecondaryLabel.textContent = "Releases";
+  } else {
+    // Default: restore original values
+    statPrimaryValue.textContent = statPrimaryValue.dataset.original || "";
+    statPrimaryLabel.textContent = "This Month";
+    statSecondaryValue.textContent = statSecondaryLabel.dataset.originalCount || "";
+    statSecondaryLabel.textContent = "Total Releases";
+  }
 }
 
 // Category navigation — sync sidebar and mobile pills
@@ -274,6 +319,10 @@ releaseList.addEventListener("click", (e) => {
 
 // Init from URL params
 function initFromURL(): void {
+  // Store original stats values for reset
+  if (statPrimaryValue) statPrimaryValue.dataset.original = statPrimaryValue.textContent || "";
+  if (statSecondaryLabel) statSecondaryLabel.dataset.originalCount = statSecondaryValue?.textContent || "";
+
   const params = new URLSearchParams(window.location.search);
   const cat = params.get("category");
   const q = params.get("q");
