@@ -22,11 +22,14 @@ function getMatchingWrappers(): HTMLElement[] {
       if (!cats.includes(activeCategory)) return false;
     }
 
-    // Search filter
+    // Search filter — match on version or individual change items only
     if (searchQuery) {
       const version = card.dataset.version?.toLowerCase() || "";
-      const text = card.textContent?.toLowerCase() || "";
-      if (!version.includes(searchQuery) && !text.includes(searchQuery)) return false;
+      const items = wrapper.querySelectorAll<HTMLElement>(".change-item");
+      const anyItemMatch = Array.from(items).some((item) =>
+        item.textContent?.toLowerCase().includes(searchQuery)
+      );
+      if (!version.includes(searchQuery) && !anyItemMatch) return false;
     }
 
     return true;
@@ -34,14 +37,30 @@ function getMatchingWrappers(): HTMLElement[] {
 }
 
 function filterItems(wrapper: HTMLElement): void {
+  const items = wrapper.querySelectorAll<HTMLElement>(".change-item");
   const visibleCategories = new Set<string>();
 
-  wrapper.querySelectorAll<HTMLElement>(".change-item").forEach((item) => {
+  // Apply both category and search filters
+  items.forEach((item) => {
     const categoryMatch = activeCategory === "all" || item.dataset.category === activeCategory;
     const searchMatch = !searchQuery || item.textContent?.toLowerCase().includes(searchQuery);
-    const visible = categoryMatch && searchMatch;
-    item.style.display = visible ? "" : "none";
-    if (visible && item.dataset.category) visibleCategories.add(item.dataset.category);
+    item.style.display = categoryMatch && searchMatch ? "" : "none";
+  });
+
+  // If search matched the card but no individual items survived, show all category-matching items
+  // (e.g. searching by version number like "2.1.30")
+  const anyVisible = Array.from(items).some((item) => item.style.display !== "none");
+  if (!anyVisible && searchQuery) {
+    items.forEach((item) => {
+      const categoryMatch = activeCategory === "all" || item.dataset.category === activeCategory;
+      item.style.display = categoryMatch ? "" : "none";
+    });
+  }
+
+  items.forEach((item) => {
+    if (item.style.display !== "none" && item.dataset.category) {
+      visibleCategories.add(item.dataset.category);
+    }
   });
 
   wrapper.querySelectorAll<HTMLElement>(".tag").forEach((tag) => {
