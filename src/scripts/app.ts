@@ -17,17 +17,33 @@ function getMatchingWrappers(): HTMLElement[] {
     const card = wrapper.querySelector(".release-card") as HTMLElement;
     if (!card) return false;
 
-    // Category filter
+    const items = Array.from(wrapper.querySelectorAll<HTMLElement>(".change-item"));
+
+    // When both filters are active, require at least one item matching both
+    // OR version matching the search with the card having category items
+    if (activeCategory !== "all" && searchQuery) {
+      const version = card.dataset.version?.toLowerCase() || "";
+      if (version.includes(searchQuery)) {
+        const cats: string[] = JSON.parse(card.dataset.categories || "[]");
+        return cats.includes(activeCategory);
+      }
+      return items.some((item) => {
+        const categoryMatch = item.dataset.category === activeCategory;
+        const searchMatch = item.textContent?.toLowerCase().includes(searchQuery);
+        return categoryMatch && searchMatch;
+      });
+    }
+
+    // Category filter only
     if (activeCategory !== "all") {
       const cats: string[] = JSON.parse(card.dataset.categories || "[]");
       if (!cats.includes(activeCategory)) return false;
     }
 
-    // Search filter — match on version or individual change items only
+    // Search filter only — match on version or individual change items
     if (searchQuery) {
       const version = card.dataset.version?.toLowerCase() || "";
-      const items = wrapper.querySelectorAll<HTMLElement>(".change-item");
-      const anyItemMatch = Array.from(items).some((item) =>
+      const anyItemMatch = items.some((item) =>
         item.textContent?.toLowerCase().includes(searchQuery)
       );
       if (!version.includes(searchQuery) && !anyItemMatch) return false;
