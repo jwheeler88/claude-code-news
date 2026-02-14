@@ -239,4 +239,32 @@ function renderInlineCode(text: string): string {
   .copy-btn:hover {
     color: var(--color-accent);
   }
+
+  @media (max-width: 1023px) {
+    .release-card {
+      padding: 16px;
+      border-radius: 10px;
+    }
+
+    .card-header {
+      margin-bottom: 12px;
+    }
+
+    .version {
+      font-size: 17px;
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 2px 6px;
+    }
+
+    .change-item {
+      padding: 6px 8px;
+    }
+
+    .copy-btn {
+      opacity: 1;
+    }
+  }
 </style>
