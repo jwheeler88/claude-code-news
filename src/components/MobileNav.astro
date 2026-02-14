@@ -1,0 +1,82 @@
+---
+interface CategoryNav {
+  label: string;
+  value: string;
+  count: number;
+}
+
+interface Props {
+  categories: CategoryNav[];
+  totalReleases: number;
+  thisMonthCount: number;
+}
+
+const { categories, totalReleases, thisMonthCount } = Astro.props;
+---
+<div class="mobile-nav">
+  <div class="pills-bar">
+    <button class="pill active" data-category="all">All</button>
+    {categories.map((cat) => (
+      <button class="pill" data-category={cat.value}>{cat.label}</button>
+    ))}
+  </div>
+  <div class="mobile-stats">
+    {totalReleases} releases &middot; {thisMonthCount} this month
+  </div>
+</div>
+
+<style>
+  .mobile-nav {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .mobile-nav {
+      display: block;
+    }
+
+    .pills-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 0 16px 8px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .pills-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 20px;
+      background: transparent;
+      color: var(--color-text-muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+
+    .pill:hover {
+      background: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+
+    .pill.active {
+      background: var(--color-accent-dim);
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+
+    .mobile-stats {
+      padding: 4px 16px 0;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+  }
+</style>

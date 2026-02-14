@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Sidebar from "../components/Sidebar.astro";
 import ReleaseCard from "../components/ReleaseCard.astro";
+import MobileNav from "../components/MobileNav.astro";
 import { fetchReleases } from "../lib/github";
 import type { Category } from "../lib/types";
 
@@ -35,6 +36,12 @@ const loadedVersion = latestVersion;
     totalReleases={releases.length}
     thisMonthCount={thisMonthCount}
     latestVersion={latestVersion}
+  />
+
+  <MobileNav
+    categories={categoryCounts}
+    totalReleases={releases.length}
+    thisMonthCount={thisMonthCount}
   />
 
   <main class="content">
