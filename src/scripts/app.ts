@@ -172,6 +172,9 @@ function initFromURL(): void {
     navItems.forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.category === cat);
     });
+    mobileNavPills.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.category === cat);
+    });
   }
 
   if (q) {
