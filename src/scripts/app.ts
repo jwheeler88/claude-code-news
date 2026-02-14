@@ -190,6 +190,9 @@ function render(): void {
   const qs = params.toString();
   const url = qs ? `?${qs}` : window.location.pathname;
   history.replaceState(null, "", url);
+
+  // Set up entrance animations for newly visible cards
+  requestAnimationFrame(() => observeNewCards());
 }
 
 // Category navigation — sync sidebar and mobile pills
@@ -316,6 +319,30 @@ if (searchToggle && mobileSearchClose && contentHeader) {
   searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && contentHeader.classList.contains("search-expanded")) {
       contentHeader.classList.remove("search-expanded");
+    }
+  });
+}
+
+// Scroll-driven entrance animations
+const entranceObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const el = entry.target as HTMLElement;
+        el.classList.remove("observe-entrance");
+        el.classList.add("entered");
+        entranceObserver.unobserve(el);
+      }
+    });
+  },
+  { threshold: 0.1 }
+);
+
+function observeNewCards(): void {
+  releaseWrappers.forEach((w) => {
+    if (w.style.display !== "none" && !w.classList.contains("entered")) {
+      w.classList.add("observe-entrance");
+      entranceObserver.observe(w);
     }
   });
 }

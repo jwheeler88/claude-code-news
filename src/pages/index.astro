@@ -477,6 +477,8 @@ const loadedVersion = latestVersion;
   }
 
   .release-wrapper {
+    opacity: 1;
+    transform: translateY(0);
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
@@ -489,6 +491,17 @@ const loadedVersion = latestVersion;
   .release-wrapper.fade-in {
     opacity: 0;
     transform: translateY(8px);
+  }
+
+  .release-wrapper.observe-entrance {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .release-wrapper.entered {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
   }
 
   :global(.search-highlight) {
