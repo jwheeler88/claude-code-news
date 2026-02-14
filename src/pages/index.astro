@@ -85,7 +85,9 @@ const loadedVersion = latestVersion;
     </div>
 
     <div id="load-more-container" class="load-more-container">
-      <button id="load-more-btn" class="load-more-btn">Load more</button>
+      <button id="load-more-btn" class="load-more-btn">
+        Load more <span id="load-more-count" class="load-more-count"></span>
+      </button>
     </div>
 
     <footer class="mobile-attribution">
@@ -516,6 +518,12 @@ const loadedVersion = latestVersion;
   .load-more-btn:hover {
     background: var(--color-surface-hover);
     border-color: var(--color-text-muted);
+  }
+
+  .load-more-count {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    margin-left: 4px;
   }
 
   .toast {

@@ -8,6 +8,7 @@ const searchInput = document.getElementById("search-input") as HTMLInputElement;
 const releaseList = document.getElementById("release-list")!;
 const loadMoreBtn = document.getElementById("load-more-btn")!;
 const loadMoreContainer = document.getElementById("load-more-container")!;
+const loadMoreCount = document.getElementById("load-more-count")!;
 const navItems = document.querySelectorAll<HTMLButtonElement>(".nav-item");
 const mobileNavPills = document.querySelectorAll<HTMLButtonElement>(".pill");
 const releaseWrappers = Array.from(releaseList.querySelectorAll<HTMLElement>(".release-wrapper"));
@@ -173,7 +174,13 @@ function render(): void {
     });
 
     // Load more button
-    loadMoreContainer.style.display = matching.length > visibleCount ? "" : "none";
+    const remaining = matching.length - visibleCount;
+    if (remaining > 0) {
+      loadMoreContainer.style.display = "";
+      loadMoreCount.textContent = `\u00B7 ${remaining} remaining`;
+    } else {
+      loadMoreContainer.style.display = "none";
+    }
   }, 150); // matches fade-out duration
 
   // Update URL (immediate, don't wait for animation)
@@ -233,8 +240,18 @@ searchInput.addEventListener("keydown", (e) => {
 
 // Load more
 loadMoreBtn.addEventListener("click", () => {
+  const previousCount = visibleCount;
   visibleCount += BATCH_SIZE;
   render();
+
+  // Scroll to the first newly revealed card
+  const matching = getMatchingWrappers();
+  const firstNew = matching[previousCount];
+  if (firstNew) {
+    setTimeout(() => {
+      firstNew.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 200);
+  }
 });
 
 // Copy to clipboard
