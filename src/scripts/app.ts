@@ -12,6 +12,49 @@ const navItems = document.querySelectorAll<HTMLButtonElement>(".nav-item");
 const mobileNavPills = document.querySelectorAll<HTMLButtonElement>(".pill");
 const releaseWrappers = Array.from(releaseList.querySelectorAll<HTMLElement>(".release-wrapper"));
 
+function highlightText(el: HTMLElement, query: string): void {
+  clearHighlight(el);
+  if (!query) return;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const matches: { node: Text; index: number }[] = [];
+
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text;
+    const idx = node.textContent?.toLowerCase().indexOf(query) ?? -1;
+    if (idx !== -1) {
+      matches.push({ node, index: idx });
+    }
+  }
+
+  // Process in reverse so indices stay valid
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const { node, index } = matches[i];
+    const text = node.textContent!;
+    const before = text.slice(0, index);
+    const match = text.slice(index, index + query.length);
+    const after = text.slice(index + query.length);
+
+    const mark = document.createElement("mark");
+    mark.className = "search-highlight";
+    mark.textContent = match;
+
+    const frag = document.createDocumentFragment();
+    if (before) frag.appendChild(document.createTextNode(before));
+    frag.appendChild(mark);
+    if (after) frag.appendChild(document.createTextNode(after));
+
+    node.parentNode!.replaceChild(frag, node);
+  }
+}
+
+function clearHighlight(el: HTMLElement): void {
+  el.querySelectorAll("mark.search-highlight").forEach((mark) => {
+    const parent = mark.parentNode!;
+    parent.replaceChild(document.createTextNode(mark.textContent || ""), mark);
+    parent.normalize();
+  });
+}
+
 function getMatchingWrappers(): HTMLElement[] {
   return releaseWrappers.filter((wrapper) => {
     const card = wrapper.querySelector(".release-card") as HTMLElement;
@@ -83,6 +126,18 @@ function filterItems(wrapper: HTMLElement): void {
   wrapper.querySelectorAll<HTMLElement>(".tag").forEach((tag) => {
     const tagCategory = tag.className.match(/tag-(\S+)/)?.[1] || "";
     tag.style.display = visibleCategories.has(tagCategory) ? "" : "none";
+  });
+
+  // Highlight search matches in visible items
+  items.forEach((item) => {
+    const textEl = item.querySelector(".item-text") as HTMLElement;
+    if (textEl) {
+      if (item.style.display !== "none" && searchQuery) {
+        highlightText(textEl, searchQuery);
+      } else {
+        clearHighlight(textEl);
+      }
+    }
   });
 }
 
