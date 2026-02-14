@@ -175,4 +175,27 @@ function initFromURL(): void {
   render();
 }
 
+// Mobile search toggle
+const searchToggle = document.getElementById("search-toggle");
+const mobileSearchClose = document.getElementById("mobile-search-close");
+const contentHeader = document.querySelector(".content-header");
+
+if (searchToggle && mobileSearchClose && contentHeader) {
+  searchToggle.addEventListener("click", () => {
+    contentHeader.classList.add("search-expanded");
+    searchInput.focus();
+  });
+
+  mobileSearchClose.addEventListener("click", () => {
+    contentHeader.classList.remove("search-expanded");
+  });
+
+  // ESC also closes mobile search
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && contentHeader.classList.contains("search-expanded")) {
+      contentHeader.classList.remove("search-expanded");
+    }
+  });
+}
+
 initFromURL();
