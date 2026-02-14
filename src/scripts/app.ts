@@ -3,6 +3,7 @@ const BATCH_SIZE = 10;
 let activeCategory = "all";
 let searchQuery = "";
 let visibleCount = BATCH_SIZE;
+let renderTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 const searchInput = document.getElementById("search-input") as HTMLInputElement;
 const releaseList = document.getElementById("release-list")!;
@@ -48,16 +49,27 @@ function highlightText(el: HTMLElement, query: string): void {
     frag.appendChild(mark);
     if (after) frag.appendChild(document.createTextNode(after));
 
-    node.parentNode!.replaceChild(frag, node);
+    const parent = node.parentNode;
+    if (!parent) continue;
+    parent.replaceChild(frag, node);
   }
 }
 
 function clearHighlight(el: HTMLElement): void {
   el.querySelectorAll("mark.search-highlight").forEach((mark) => {
-    const parent = mark.parentNode!;
+    const parent = mark.parentNode;
+    if (!parent) return;
     parent.replaceChild(document.createTextNode(mark.textContent || ""), mark);
     parent.normalize();
   });
+}
+
+function parseCategories(raw: string | undefined): string[] {
+  try {
+    return JSON.parse(raw || "[]");
+  } catch {
+    return [];
+  }
 }
 
 function getMatchingWrappers(): HTMLElement[] {
@@ -72,7 +84,7 @@ function getMatchingWrappers(): HTMLElement[] {
     if (activeCategory !== "all" && searchQuery) {
       const version = card.dataset.version?.toLowerCase() || "";
       if (version.includes(searchQuery)) {
-        const cats: string[] = JSON.parse(card.dataset.categories || "[]");
+        const cats = parseCategories(card.dataset.categories);
         return cats.includes(activeCategory);
       }
       return items.some((item) => {
@@ -84,7 +96,7 @@ function getMatchingWrappers(): HTMLElement[] {
 
     // Category filter only
     if (activeCategory !== "all") {
-      const cats: string[] = JSON.parse(card.dataset.categories || "[]");
+      const cats = parseCategories(card.dataset.categories);
       if (!cats.includes(activeCategory)) return false;
     }
 
@@ -99,6 +111,14 @@ function getMatchingWrappers(): HTMLElement[] {
 
     return true;
   });
+}
+
+function countVisibleItems(wrappers: HTMLElement[]): number {
+  return wrappers.reduce((sum, w) => {
+    return sum + Array.from(w.querySelectorAll<HTMLElement>(".change-item")).filter(
+      (item) => item.style.display !== "none"
+    ).length;
+  }, 0);
 }
 
 function filterItems(wrapper: HTMLElement): void {
@@ -149,16 +169,28 @@ function filterItems(wrapper: HTMLElement): void {
 function render(): void {
   const matching = getMatchingWrappers();
 
+  // Cancel any in-flight render to prevent overlapping DOM mutations
+  if (renderTimeoutId !== null) {
+    clearTimeout(renderTimeoutId);
+  }
+
+  // Capture currently visible set before any changes
+  const previouslyVisible = new Set(
+    releaseWrappers.filter((w) => w.style.display !== "none")
+  );
+
   // Phase 1: fade out wrappers that should hide
+  const visibleSet = new Set(matching.slice(0, visibleCount));
   releaseWrappers.forEach((w) => {
-    const shouldShow = matching.indexOf(w) !== -1 && matching.indexOf(w) < visibleCount;
-    if (!shouldShow && w.style.display !== "none") {
+    if (!visibleSet.has(w) && w.style.display !== "none") {
       w.classList.add("fade-out");
     }
   });
 
   // Phase 2: after fade-out completes, hide them and show new ones
-  setTimeout(() => {
+  renderTimeoutId = setTimeout(() => {
+    renderTimeoutId = null;
+
     releaseWrappers.forEach((w) => {
       w.classList.remove("fade-out");
       w.style.display = "none";
@@ -166,18 +198,16 @@ function render(): void {
 
     matching.forEach((w, i) => {
       if (i < visibleCount) {
-        const wasHidden = w.style.display === "none";
         w.style.display = "";
         filterItems(w);
-        if (wasHidden) {
+        if (!previouslyVisible.has(w)) {
           w.classList.add("fade-in");
-          // Stagger: 30ms per card
+          // Remove fade-in class after staggered delay to trigger CSS transition
           setTimeout(() => w.classList.remove("fade-in"), 30 * (i + 1));
         }
       }
     });
 
-    // Load more button
     const remaining = matching.length - visibleCount;
     if (remaining > 0) {
       loadMoreContainer.style.display = "";
@@ -185,7 +215,10 @@ function render(): void {
     } else {
       loadMoreContainer.style.display = "none";
     }
-  }, 150); // matches fade-out duration
+
+    updateStats(matching);
+    requestAnimationFrame(() => observeNewCards());
+  }, 200); // matches .release-wrapper CSS transition duration
 
   // Update URL (immediate, don't wait for animation)
   const params = new URLSearchParams();
@@ -194,48 +227,30 @@ function render(): void {
   const qs = params.toString();
   const url = qs ? `?${qs}` : window.location.pathname;
   history.replaceState(null, "", url);
-
-  // Set up entrance animations for newly visible cards
-  requestAnimationFrame(() => observeNewCards());
-
-  // Update stats
-  updateStats();
 }
 
-function updateStats(): void {
+function updateStats(matching: HTMLElement[]): void {
   if (!statPrimaryValue || !statPrimaryLabel || !statSecondaryValue || !statSecondaryLabel) return;
 
-  const matching = getMatchingWrappers();
   const matchCount = matching.length;
 
   if (searchQuery) {
-    // Search mode: show result count
-    const totalItems = matching.reduce((sum, w) => {
-      return sum + Array.from(w.querySelectorAll<HTMLElement>(".change-item")).filter(
-        (item) => item.style.display !== "none"
-      ).length;
-    }, 0);
+    const totalItems = countVisibleItems(matching);
     statPrimaryValue.textContent = String(totalItems);
     statPrimaryLabel.textContent = `Results for "${searchQuery}"`;
     statSecondaryValue.textContent = String(matchCount);
     statSecondaryLabel.textContent = "Releases Matched";
   } else if (activeCategory !== "all") {
-    // Category mode: show category-specific stats
-    const totalItems = matching.reduce((sum, w) => {
-      return sum + Array.from(w.querySelectorAll<HTMLElement>(".change-item")).filter(
-        (item) => item.style.display !== "none"
-      ).length;
-    }, 0);
+    const totalItems = countVisibleItems(matching);
     const label = document.querySelector(`.nav-item.active .nav-label`)?.textContent || activeCategory;
     statPrimaryValue.textContent = String(totalItems);
     statPrimaryLabel.textContent = `${label} Items`;
     statSecondaryValue.textContent = String(matchCount);
     statSecondaryLabel.textContent = "Releases";
   } else {
-    // Default: restore original values
     statPrimaryValue.textContent = statPrimaryValue.dataset.original || "";
     statPrimaryLabel.textContent = "This Month";
-    statSecondaryValue.textContent = statSecondaryLabel.dataset.originalCount || "";
+    statSecondaryValue.textContent = statSecondaryValue.dataset.original || "";
     statSecondaryLabel.textContent = "Total Releases";
   }
 }
@@ -290,15 +305,15 @@ searchInput.addEventListener("keydown", (e) => {
 loadMoreBtn.addEventListener("click", () => {
   const previousCount = visibleCount;
   visibleCount += BATCH_SIZE;
+  const matching = getMatchingWrappers();
   render();
 
   // Scroll to the first newly revealed card
-  const matching = getMatchingWrappers();
   const firstNew = matching[previousCount];
   if (firstNew) {
     setTimeout(() => {
       firstNew.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 200);
+    }, 250);
   }
 });
 
@@ -308,6 +323,8 @@ releaseList.addEventListener("click", (e) => {
   if (!btn) return;
 
   const text = btn.dataset.copy || "";
+  if (!navigator.clipboard) return;
+
   navigator.clipboard.writeText(text).then(() => {
     const icon = btn.querySelector(".material-symbols-sharp");
     if (icon) {
@@ -319,6 +336,8 @@ releaseList.addEventListener("click", (e) => {
         btn.classList.remove("copied");
       }, 1500);
     }
+  }).catch(() => {
+    // Clipboard write can fail (permissions, insecure context, loss of focus)
   });
 });
 
@@ -326,7 +345,7 @@ releaseList.addEventListener("click", (e) => {
 function initFromURL(): void {
   // Store original stats values for reset
   if (statPrimaryValue) statPrimaryValue.dataset.original = statPrimaryValue.textContent || "";
-  if (statSecondaryLabel) statSecondaryLabel.dataset.originalCount = statSecondaryValue?.textContent || "";
+  if (statSecondaryValue) statSecondaryValue.dataset.original = statSecondaryValue.textContent || "";
 
   const params = new URLSearchParams(window.location.search);
   const cat = params.get("category");
