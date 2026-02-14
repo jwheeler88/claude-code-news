@@ -38,13 +38,8 @@ const loadedVersion = latestVersion;
     latestVersion={latestVersion}
   />
 
-  <MobileNav
-    categories={categoryCounts}
-    totalReleases={releases.length}
-    thisMonthCount={thisMonthCount}
-  />
-
   <main class="content">
+    <div class="sticky-header">
     <header class="content-header">
       <div class="header-text">
         <div class="title-row">
@@ -73,6 +68,12 @@ const loadedVersion = latestVersion;
         </button>
       </div>
     </header>
+    <MobileNav
+      categories={categoryCounts}
+      totalReleases={releases.length}
+      thisMonthCount={thisMonthCount}
+    />
+    </div>
 
     <div id="release-list" class="release-list">
       {releases.map((release, i) => (
@@ -522,6 +523,10 @@ const loadedVersion = latestVersion;
     display: flex;
   }
 
+  .sticky-header {
+    /* no-op on desktop */
+  }
+
   .search-toggle {
     display: none;
   }
@@ -539,11 +544,19 @@ const loadedVersion = latestVersion;
       padding: 0 16px 24px;
     }
 
-    .content-header {
+    .sticky-header {
       position: sticky;
       top: 0;
       z-index: 50;
       background: var(--color-bg);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--color-border);
+      margin: 0 -16px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .content-header {
       padding: 12px 0;
       margin-bottom: 0;
       flex-wrap: wrap;
