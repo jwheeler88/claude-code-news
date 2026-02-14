@@ -302,7 +302,7 @@ loadMoreBtn.addEventListener("click", () => {
   }
 });
 
-// Copy to clipboard
+// Copy to clipboard with feedback animation
 releaseList.addEventListener("click", (e) => {
   const btn = (e.target as HTMLElement).closest(".copy-btn") as HTMLElement;
   if (!btn) return;
@@ -312,7 +312,12 @@ releaseList.addEventListener("click", (e) => {
     const icon = btn.querySelector(".material-symbols-sharp");
     if (icon) {
       icon.textContent = "check";
-      setTimeout(() => (icon.textContent = "content_copy"), 1500);
+      btn.classList.add("copied");
+
+      setTimeout(() => {
+        icon.textContent = "content_copy";
+        btn.classList.remove("copied");
+      }, 1500);
     }
   });
 });
