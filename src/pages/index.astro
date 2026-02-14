@@ -732,13 +732,13 @@ const loadedVersion = latestVersion;
     const INITIAL_DELAY = 3000;
 
     const lines = [
-      { type: 'typed', html: '<span class="subtitle-prompt">❯</span>&nbsp;', text: 'tail -f claude-code/CHANGELOG --since="latest"' },
+      { type: 'typed', html: '<span class="subtitle-prompt">❯</span>&nbsp;', text: 'tail -f ~/.claude/CHANGELOG.md --since="latest"' },
       { type: 'spacer' },
       { type: 'typed', html: '', text: 'Permission denied. I\'m afraid I can\'t allow that, Dave.', classes: 'terminal-output terminal-error' },
       { type: 'typed', html: '<span class="terminal-connector">└</span>&nbsp;', classes: 'terminal-output', richSegments: [
         { text: 'Bash', cls: 'tool-call' },
         { text: '(' },
-        { text: 'rm -rf claude-code/CHANGELOG', cls: 'tool-cmd' },
+        { text: 'rm -rf ~/.claude/CHANGELOG.md', cls: 'tool-cmd' },
         { text: ')' }
       ]},
       { type: 'spacer' },
