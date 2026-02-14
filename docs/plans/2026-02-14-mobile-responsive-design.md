@@ -2,97 +2,121 @@
 
 ## Overview
 
-Make the Claude Code Release Notes Viewer mobile-friendly with appropriate breakpoints for phones and tablets. The desktop layout remains unchanged.
+Make the Claude Code Release Notes Viewer mobile-friendly. Desktop layout remains unchanged. CSS strategy is desktop-first overrides — all existing styles stay untouched, responsive behavior added via `max-width` media queries.
 
 ## Breakpoints
 
-| Breakpoint | Target | Layout |
-|---|---|---|
-| Default (< 768px) | Phones | Single column, pills bar, search icon |
-| 768px+ | Tablets | Single column, more spacious, centered cards |
-| 1024px+ | Desktop | Current two-column sidebar layout (unchanged) |
+| Breakpoint | Layout |
+|---|---|
+| < 1024px | Single column, pills bar, search icon, sticky header |
+| 1024px+ | Current two-column sidebar layout (unchanged) |
 
-Mobile-first CSS approach: base styles for mobile, `@media (min-width: 768px)` for tablet, `@media (min-width: 1024px)` to restore current desktop layout.
+Desktop-first approach: existing styles are the default, `@media (max-width: 1023px)` adds mobile/tablet overrides.
 
 ## Layout Structure (< 1024px)
 
 ```
-┌──────────────────────┐
-│ Header + search icon  │  ← sticky
-├──────────────────────┤
-│ [All] [Features] …   │  ← sticky, horizontal scroll pills
-├──────────────────────┤
-│ 32 releases · 4 mo   │  ← compact stats row
-├──────────────────────┤
-│ Release Card          │
-│ Release Card          │
-│ ...                   │
-│ [Load More]           │
-└──────────────────────┘
+┌──────────────────────────┐
+│ ┌──────────────────────┐ │
+│ │ Header + search icon  │ │  ← single sticky
+│ ├──────────────────────┤ │    wrapper
+│ │ [All] [Features] …   │ │
+│ └──────────────────────┘ │
+├──────────────────────────┤
+│ 32 releases · 4 this mo  │  ← compact stats row
+├──────────────────────────┤
+│ Release Card              │
+│ Release Card              │
+│ ...                       │
+│ [Load More]               │
+├──────────────────────────┤
+│ Made with Pencil          │  ← attribution footer
+└──────────────────────────┘
 ```
 
 ## Mobile Header & Search
 
 - Left: HAL 9000 icon + compact title ("Claude Code" instead of full title)
-- Right: Search icon (magnifying glass)
+- Right: Search icon button (magnifying glass), hidden at 1024px+
 - Tapping search icon expands a full-width input over the header content with an X to dismiss
 - Autofocus on expand, ESC or X to collapse
-- `Cmd/Ctrl+K` shortcut still works on tablets with keyboards, but shortcut hint hidden on mobile
-- Desktop search input hidden below 1024px; `.search-toggle` button shown instead
 - Toggle a `.search-expanded` class on the header to manage visibility
+- Desktop search input hidden below 1024px; `.search-toggle` button shown instead
+- No keyboard shortcut on mobile — icon tap is sufficient
+- Terminal typewriter block hidden below 1024px
+- CRT/glitch title animations disabled below 1024px (keep static title styling)
 
-## Category Pills Bar (< 1024px)
+## New Component: MobileNav.astro
 
-- Directly below header, sticky
+Renders the pills bar and compact stats row. Hidden at 1024px+. Receives same category data props as Sidebar.
+
+### Category Pills Bar
 - Horizontal scrolling row (`overflow-x: auto`, hidden scrollbar)
 - Order: All, Features, Bug Fixes, Performance, Security, Improvements, Misc
 - Active pill uses existing category highlight color
 - Horizontal padding so pills don't touch screen edges
-- `-webkit-overflow-scrolling: touch` for smooth iOS scrolling
 
-## Stats Row (< 1024px)
-
+### Compact Stats Row
 - Below pills bar: `32 releases · 4 this month`
-- Smaller font, muted color
-- Informational, not prominent
+- Smaller font, muted color, not prominent
 
 ## Sticky Behavior
 
-- Header sticks to top, pills bar sticks below it
-- ~90-100px total fixed top space on mobile
+- Single sticky wrapper (`position: sticky; top: 0`) containing header + pills bar
+- Avoids coordinating multiple sticky elements with hardcoded `top` values
+- Search expansion pushes pills down naturally within the wrapper
+- ~90-100px total sticky space
 
-## Release Cards
+## Sidebar (< 1024px)
 
-### Phones (< 768px)
-- Full-width, 16px horizontal padding
+- Entire sidebar hidden below 1024px (`display: none`)
+- Content margin-left reset to zero below 1024px
+- Sidebar component itself unchanged
+
+## Release Cards (< 1024px)
+
+- Single set of styles for all viewports below 1024px
+- Content area: `max-width: 720px; margin: 0 auto` (auto-centers on tablets, no effect on phones)
+- 16px horizontal padding
 - Version + date on same line, slightly smaller font sizes
 - Category tags: `flex-wrap: wrap` with smaller padding
-- Copy icon always visible (no hover on touch devices)
-- Tighter vertical gaps between cards (16px)
+- Copy icon always visible (no hover on touch)
+- Tighter vertical gaps between cards
 - Load More button: full-width
 
-### Tablets (768px-1023px)
-- Single column, 24px padding
-- Cards max-width ~720px, centered
-- More generous spacing than phone
-- Load More button: centered, constrained width
+## Toast Notification (< 1024px)
+
+- Positioned below sticky area (~100px from top)
+- Full-width with horizontal margin
+
+## Attribution Footer (< 1024px)
+
+- Pencil attribution moved to a simple footer below the release list
+- One line, small text
+- Hidden at 1024px+ (sidebar handles attribution on desktop)
 
 ## Files to Modify
 
-- `src/pages/index.astro` — Media queries for page layout, pills bar markup
-- `src/components/Sidebar.astro` — Extract category nav to render as pills on mobile, sidebar on desktop
-- `src/components/ReleaseCard.astro` — Responsive card styles, tag reflow, copy icon visibility
-- `src/layouts/Layout.astro` — Global responsive typography adjustments
-- `src/scripts/app.ts` — Search toggle logic (event listener, class toggle)
+- `src/pages/index.astro` — Sticky wrapper markup, mobile header with search toggle button, toast positioning, attribution footer
+- `src/components/MobileNav.astro` — **New file**: pills bar + compact stats row (hidden at 1024px+)
+- `src/components/Sidebar.astro` — Hide below 1024px (one media query)
+- `src/components/ReleaseCard.astro` — Card responsive styles, copy button always visible
+- `src/layouts/Layout.astro` — Content margin-left reset, disable CRT animations
+- `src/scripts/app.ts` — Search toggle logic (event listener, class toggle, autofocus)
 
 ## What Stays the Same
 
 - All data fetching, parsing, categorization logic
-- URL state management, pagination, toast notifications
+- URL state management, pagination
+- Toast notification logic (just repositioned)
 - Desktop layout at 1024px+
+- Background image on all viewports
 - No new dependencies
 
 ## Testing
 
 - Manual browser testing at 375px (phone), 768px (tablet), 1024px+ (desktop)
-- Verify at each breakpoint: filtering, search, pagination, copy, keyboard shortcuts, toast
+- Verify at each breakpoint: filtering, search, pagination, copy, toast
+- Verify search toggle: expand, autofocus, dismiss with X, dismiss with ESC
+- Verify sticky behavior during scroll
+- Verify category pills scroll horizontally
