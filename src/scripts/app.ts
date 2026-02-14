@@ -198,6 +198,10 @@ if (searchToggle && mobileSearchClose && contentHeader) {
 
   mobileSearchClose.addEventListener("click", () => {
     contentHeader.classList.remove("search-expanded");
+    searchInput.value = "";
+    searchQuery = "";
+    visibleCount = BATCH_SIZE;
+    render();
   });
 
   // ESC also closes mobile search
