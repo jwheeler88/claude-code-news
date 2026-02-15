@@ -322,12 +322,12 @@ loadMoreBtn.addEventListener("click", () => {
   const matching = getMatchingWrappers();
   render();
 
-  // Scroll to the first newly revealed card
+  // Scroll to the first newly revealed card (after render completes)
   const firstNew = matching[previousCount];
   if (firstNew) {
     setTimeout(() => {
       firstNew.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 250);
+    }, 350);
   }
 });
 
