@@ -169,9 +169,14 @@ function filterItems(wrapper: HTMLElement): void {
 function render(): void {
   const matching = getMatchingWrappers();
 
-  // Cancel any in-flight render to prevent overlapping DOM mutations
+  // Cancel any in-flight render and clean up stale animation state
   if (renderTimeoutId !== null) {
     clearTimeout(renderTimeoutId);
+    renderTimeoutId = null;
+    // Remove leftover fade classes from the cancelled render
+    releaseWrappers.forEach((w) => {
+      w.classList.remove("fade-out", "fade-in");
+    });
   }
 
   // Capture currently visible set before any changes
@@ -191,19 +196,28 @@ function render(): void {
   renderTimeoutId = setTimeout(() => {
     renderTimeoutId = null;
 
+    const nextVisible = new Set(matching.slice(0, visibleCount));
+
+    // Hide wrappers that are no longer matching (skip ones staying visible)
     releaseWrappers.forEach((w) => {
       w.classList.remove("fade-out");
-      w.style.display = "none";
+      if (!nextVisible.has(w)) {
+        w.style.display = "none";
+      }
     });
 
+    // Show matching wrappers, fade in newly appearing ones
+    let newIndex = 0;
     matching.forEach((w, i) => {
       if (i < visibleCount) {
         w.style.display = "";
         filterItems(w);
         if (!previouslyVisible.has(w)) {
+          // Clear entrance observer classes so fade-in isn't overridden by .entered
+          w.classList.remove("entered", "observe-entrance");
           w.classList.add("fade-in");
           // Remove fade-in class after staggered delay to trigger CSS transition
-          setTimeout(() => w.classList.remove("fade-in"), 30 * (i + 1));
+          setTimeout(() => w.classList.remove("fade-in"), 30 * (++newIndex));
         }
       }
     });
@@ -218,7 +232,7 @@ function render(): void {
 
     updateStats(matching);
     requestAnimationFrame(() => observeNewCards());
-  }, 200); // matches .release-wrapper CSS transition duration
+  }, 300); // matches .release-wrapper CSS transition duration
 
   // Update URL (immediate, don't wait for animation)
   const params = new URLSearchParams();
