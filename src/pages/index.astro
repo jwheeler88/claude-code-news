@@ -85,7 +85,9 @@ const loadedVersion = latestVersion;
     </div>
 
     <div id="load-more-container" class="load-more-container">
-      <button id="load-more-btn" class="load-more-btn">Load more</button>
+      <button id="load-more-btn" class="load-more-btn">
+        Load more <span id="load-more-count" class="load-more-count"></span>
+      </button>
     </div>
 
     <footer class="mobile-attribution">
@@ -474,6 +476,41 @@ const loadedVersion = latestVersion;
     gap: 16px;
   }
 
+  .release-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .release-wrapper.fade-out {
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+  }
+
+  .release-wrapper.fade-in {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .release-wrapper.observe-entrance {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .release-wrapper.entered {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  :global(.search-highlight) {
+    background: rgba(204, 0, 0, 0.25);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+
   .load-more-container {
     margin-top: 24px;
     text-align: center;
@@ -494,6 +531,12 @@ const loadedVersion = latestVersion;
   .load-more-btn:hover {
     background: var(--color-surface-hover);
     border-color: var(--color-text-muted);
+  }
+
+  .load-more-count {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    margin-left: 4px;
   }
 
   .toast {
@@ -559,13 +602,17 @@ const loadedVersion = latestVersion;
       padding: 0 16px 24px;
     }
 
-    .sticky-header {
+    .content > .sticky-header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: var(--color-bg);
+      background-color: var(--color-bg);
       padding-bottom: 8px;
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: none;
+      background-image: linear-gradient(to right, transparent, rgba(204, 0, 0, 0.4), transparent);
+      background-size: 100% 1px;
+      background-position: bottom;
+      background-repeat: no-repeat;
       margin: 0 -16px;
       padding-left: 16px;
       padding-right: 16px;
@@ -593,6 +640,7 @@ const loadedVersion = latestVersion;
       text-shadow: none;
       padding: 0;
       margin: 0;
+      overflow: visible;
       -webkit-mask-image: none;
       mask-image: none;
     }
@@ -603,12 +651,46 @@ const loadedVersion = latestVersion;
       display: none;
     }
 
+    @keyframes mobile-glitch {
+      0%, 100% { text-shadow: none; transform: none; color: var(--color-text); }
+      80% { text-shadow: none; transform: none; color: var(--color-text); }
+      81% {
+        color: var(--color-accent);
+        text-shadow: 3px 0 rgba(204, 0, 0, 0.8), -3px 0 rgba(6, 182, 212, 0.8);
+        transform: translateX(-2px);
+      }
+      82% {
+        color: var(--color-accent);
+        text-shadow: -3px 0 rgba(204, 0, 0, 0.8), 3px 0 rgba(6, 182, 212, 0.8);
+        transform: translateX(2px);
+      }
+      82.5% {
+        color: var(--color-accent);
+        text-shadow: 2px 0 rgba(204, 0, 0, 0.6), -2px 0 rgba(6, 182, 212, 0.6);
+        transform: translateX(-1px);
+      }
+      83% { text-shadow: none; transform: none; color: var(--color-text); }
+    }
+
+    @keyframes mobile-flicker {
+      0%, 100% { opacity: 1; }
+      75% { opacity: 1; }
+      76% { opacity: 0.5; }
+      77% { opacity: 1; }
+      93% { opacity: 1; }
+      93.5% { opacity: 0.4; }
+      94% { opacity: 1; }
+    }
+
     .title-desktop {
       display: none;
     }
 
     .title-mobile {
       display: inline;
+      color: var(--color-text);
+      text-shadow: none;
+      animation: mobile-glitch 8s infinite, mobile-flicker 6s infinite;
     }
 
     .title-icon-img {
